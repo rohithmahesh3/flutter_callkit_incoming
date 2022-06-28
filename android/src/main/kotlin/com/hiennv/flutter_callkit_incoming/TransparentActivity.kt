@@ -44,9 +44,12 @@ class TransparentActivity : Activity() {
                 val acceptIntent = CallkitIncomingBroadcastReceiver.getIntentAccept(this@TransparentActivity, data)
                 sendBroadcast(acceptIntent)
                 packageManager.getLaunchIntentForPackage(packageName)?.cloneFilter()?.apply {
-                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    if(isTaskRoot){
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    } else {
+                        intent?.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    }
                 }?.let { startActivity(it) }
-
             }
             "CALLBACK" -> {
                 val data = intent.getBundleExtra("data")
